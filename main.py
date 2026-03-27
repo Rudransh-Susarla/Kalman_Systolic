@@ -23,26 +23,26 @@ def run_filters(x_true, y_true, x_meas, y_meas, dt=0.01):
 
     steps = len(x_true)
 
-    kf_py = KalmanFilterPython(dt=dt)
+    kf_pure = KalmanFilterPython(dt=dt)
     kf_sa = KalmanFilterSystolic(dt=dt)
 
-    est_x_py, est_y_py = [], []
+    est_x_pure, est_y_pure = [], []
     est_x_sa, est_y_sa = [], []
 
-    # ---------- Classic Python Kalman Filter ----------
+    # ---------- Pure Python Kalman Filter ----------
     t0 = time.perf_counter()
 
     for k in range(steps):
 
-        # Measurement as pure Python list-of-lists (no NumPy)
+        # Measurement as pure Python list-of-lists
         z = [[float(x_meas[k])], [float(y_meas[k])]]
 
-        ex, ey = kf_py.step(z)
+        ex, ey = kf_pure.step(z)
 
-        est_x_py.append(ex)
-        est_y_py.append(ey)
+        est_x_pure.append(ex)
+        est_y_pure.append(ey)
 
-    t_py = time.perf_counter() - t0
+    t_pure = time.perf_counter() - t0
 
 
     # ---------- Systolic Kalman Filter ----------
@@ -61,9 +61,9 @@ def run_filters(x_true, y_true, x_meas, y_meas, dt=0.01):
 
 
     return (
-        np.array(est_x_py), np.array(est_y_py),
+        np.array(est_x_pure), np.array(est_y_pure),
         np.array(est_x_sa), np.array(est_y_sa),
-        t_py, t_sa
+        t_pure, t_sa
     )
 
 
@@ -128,9 +128,9 @@ if __name__ == "__main__":
     print("[INFO] Running filters...")
 
     (
-        est_x_py, est_y_py,
+        est_x_pure, est_y_pure,
         est_x_sa, est_y_sa,
-        t_py, t_sa
+        t_pure, t_sa
     ) = run_filters(x_true, y_true, x_meas, y_meas)
 
 
@@ -138,9 +138,9 @@ if __name__ == "__main__":
     # 5. Compute Metrics
     # ------------------------------------------------
 
-    n = len(est_x_py)
+    n = len(est_x_pure)
 
-    rmse_py = rmse(est_x_py, est_y_py, x_true, y_true)
+    rmse_pure = rmse(est_x_pure, est_y_pure, x_true, y_true)
     rmse_sa = rmse(est_x_sa, est_y_sa, x_true, y_true)
 
 
@@ -153,13 +153,13 @@ if __name__ == "__main__":
     print("=" * 50)
 
     print(f"Steps processed        : {n}")
-    print(f"Classic Python KF RMSE : {rmse_py:.4f} m")
+    print(f"Pure Python KF RMSE    : {rmse_pure:.4f} m")
     print(f"Systolic KF RMSE       : {rmse_sa:.4f} m")
-    print(f"Classic Python runtime : {t_py:.3f} s")
+    print(f"Pure Python runtime    : {t_pure:.3f} s")
     print(f"Systolic runtime       : {t_sa:.3f} s")
 
-    if t_py > 0:
-        print(f"Overhead (SA vs Py)    : {t_sa/t_py:.2f}×")
+    if t_pure > 0:
+        print(f"Overhead (SA vs Pure)  : {t_sa/t_pure:.2f}×")
 
     print("=" * 50)
 
@@ -176,8 +176,8 @@ if __name__ == "__main__":
     plot_results(
         x_true, y_true,
         x_meas, y_meas,
-        est_x_py, est_y_py,
+        est_x_pure, est_y_pure,
         est_x_sa, est_y_sa,
-        rmse_py, rmse_sa,
-        t_py, t_sa
+        rmse_pure, rmse_sa,
+        t_pure, t_sa
     )

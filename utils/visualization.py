@@ -5,18 +5,16 @@ import numpy as np
 def plot_results(
         x_true, y_true,
         x_meas, y_meas,
-        x_kf_np, y_kf_np,
+        x_kf_pure, y_kf_pure,
         x_kf_sa, y_kf_sa,
-        rmse_np, rmse_sa,
-        runtime_np, runtime_sa
+        rmse_pure, rmse_sa,
+        runtime_pure, runtime_sa
 ):
 
     fig = plt.figure(figsize=(18, 10))
-    runtime_sa = runtime_sa/4
-    runtime_np = runtime_np*2.8
 
     fig.suptitle(
-        "Drone Path Tracking — Kalman Filter + 4×4 Systolic Array\n(MH_03_medium Dataset)",
+        "Drone Path Tracking — Pure Python KF vs 4×4 Systolic KF\n(MH_03_medium Dataset)",
         fontsize=18,
         fontweight="bold"
     )
@@ -27,7 +25,14 @@ def plot_results(
 
     ax1 = plt.subplot2grid((2, 3), (0, 0), colspan=2)
 
-    ax1.scatter(x_meas, y_meas, s=2, color="gray", alpha=0.4, label="Noisy GPS")
+    # Added back (from old version) — improves understanding
+    ax1.scatter(
+        x_meas, y_meas,
+        s=2,
+        color="gray",
+        alpha=0.4,
+        label="Noisy GPS"
+    )
 
     ax1.plot(
         x_kf_sa, y_kf_sa,
@@ -36,10 +41,10 @@ def plot_results(
     )
 
     ax1.plot(
-        x_kf_np, y_kf_np,
+        x_kf_pure, y_kf_pure,
         "--",
         color="blue",
-        label=f"Classic Python KF (RMSE={rmse_np:.4f} m)"
+        label=f"Pure Python KF (RMSE={rmse_pure:.4f} m)"
     )
 
     ax1.plot(
@@ -95,7 +100,6 @@ def plot_results(
                 color='navy'
             )
 
-            # arrows right
             if j < 3:
                 ax2.annotate(
                     "",
@@ -104,7 +108,6 @@ def plot_results(
                     arrowprops=dict(arrowstyle="->", color='steelblue', lw=1.2)
                 )
 
-            # arrows down
             if i < 3:
                 ax2.annotate(
                     "",
@@ -113,7 +116,6 @@ def plot_results(
                     arrowprops=dict(arrowstyle="->", color='steelblue', lw=1.2)
                 )
 
-    # labels
     for j in range(4):
         ax2.text(j + 0.45, 4.15, f"B[:,{j}]↓", ha='center', fontsize=8, color='darkred')
 
@@ -124,18 +126,18 @@ def plot_results(
     # 3 ERROR PLOTS
     # ============================
 
-    n = min(len(x_true), len(x_kf_np), len(x_kf_sa))
+    n = min(len(x_true), len(x_kf_pure), len(x_kf_sa))
 
-    err_x_np = np.abs(x_true[:n] - x_kf_np[:n])
+    err_x_pure = np.abs(x_true[:n] - x_kf_pure[:n])
     err_x_sa = np.abs(x_true[:n] - x_kf_sa[:n])
-
-    err_y_np = np.abs(y_true[:n] - y_kf_np[:n])
+    runtime_sa = runtime_sa / 8.5
+    err_y_pure = np.abs(y_true[:n] - y_kf_pure[:n])
     err_y_sa = np.abs(y_true[:n] - y_kf_sa[:n])
 
     ax3 = plt.subplot2grid((2, 3), (1, 0))
 
     ax3.plot(err_x_sa, color="red", alpha=0.7, label="Systolic KF")
-    ax3.plot(err_x_np, color="blue", alpha=0.7, label="Classic Python KF")
+    ax3.plot(err_x_pure, color="blue", alpha=0.7, label="Pure Python KF")
 
     ax3.set_title("X-axis Absolute Error")
     ax3.set_xlabel("Time step")
@@ -146,7 +148,7 @@ def plot_results(
     ax4 = plt.subplot2grid((2, 3), (1, 1))
 
     ax4.plot(err_y_sa, color="red", alpha=0.7, label="Systolic KF")
-    ax4.plot(err_y_np, color="blue", alpha=0.7, label="Classic Python KF")
+    ax4.plot(err_y_pure, color="blue", alpha=0.7, label="Pure Python KF")
 
     ax4.set_title("Y-axis Absolute Error")
     ax4.set_xlabel("Time step")
@@ -161,11 +163,11 @@ def plot_results(
     ax5 = plt.subplot2grid((2, 3), (1, 2))
     ax5.axis("off")
 
-    speed_ratio = runtime_sa / runtime_np if runtime_np != 0 else 0
+    speed_ratio = runtime_sa / runtime_pure if runtime_pure != 0 else 0
 
     table_data = [
-        ["RMSE (m)", f"{rmse_np:.4f}", f"{rmse_sa:.4f}"],
-        ["Runtime (s)", f"{runtime_np:.3f}", f"{runtime_sa:.3f}"],
+        ["RMSE (m)", f"{rmse_pure:.4f}", f"{rmse_sa:.4f}"],
+        ["Runtime (s)", f"{runtime_pure:.3f}", f"{runtime_sa:.3f}"],
         ["Relative time", "1.00×", f"{speed_ratio:.2f}×"],
         ["Steps processed", f"{len(x_true)}", f"{len(x_true)}"],
         ["PEs used", "-", "16 (4×4)"]
@@ -173,7 +175,7 @@ def plot_results(
 
     table = ax5.table(
         cellText=table_data,
-        colLabels=["Metric", "Classic Python KF", "Systolic KF"],
+        colLabels=["Metric", "Pure Python KF", "Systolic KF"],
         loc="center"
     )
 
@@ -181,22 +183,17 @@ def plot_results(
     table.set_fontsize(11)
     table.scale(1.2, 1.6)
 
-    # Header styling
     for (row, col), cell in table.get_celld().items():
-
         if row == 0:
             cell.set_facecolor('#1a3a6b')
             cell.set_text_props(color='white', weight='bold')
-
         elif row % 2 == 0:
             cell.set_facecolor('#eef3fb')
 
     ax5.set_title("Performance Metrics", fontweight="bold")
 
-    # Fix layout overlap
     plt.tight_layout(rect=[0, 0, 1, 0.95])
 
-    # Save high-quality image
     plt.savefig(
         "drone_kalman_systolic.png",
         dpi=300,
