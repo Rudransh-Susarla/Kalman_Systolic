@@ -1,0 +1,53 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Compiled / Binary
+# ==============================
+*.dll
+*.so
+*.o
+*.obj
+*.lib
+*.exp
+
+# ==============================
+# Data / Outputs
+# ==============================
+*.png
+*.jpg
+*.jpeg
+
+# Uncomment if you want to ignore the dataset too
+# dataset/
+
+# ==============================
+# IDE / OS
+# ==============================
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Jupyter
+# ==============================
+.ipynb_checkpoints/
+*.ipynb
