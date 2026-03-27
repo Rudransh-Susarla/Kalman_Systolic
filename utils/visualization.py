@@ -39,7 +39,7 @@ def plot_results(
         x_kf_np, y_kf_np,
         "--",
         color="blue",
-        label=f"NumPy KF (RMSE={rmse_np:.4f} m)"
+        label=f"Classic Python KF (RMSE={rmse_np:.4f} m)"
     )
 
     ax1.plot(
@@ -135,7 +135,7 @@ def plot_results(
     ax3 = plt.subplot2grid((2, 3), (1, 0))
 
     ax3.plot(err_x_sa, color="red", alpha=0.7, label="Systolic KF")
-    ax3.plot(err_x_np, color="blue", alpha=0.7, label="NumPy KF")
+    ax3.plot(err_x_np, color="blue", alpha=0.7, label="Classic Python KF")
 
     ax3.set_title("X-axis Absolute Error")
     ax3.set_xlabel("Time step")
@@ -146,7 +146,7 @@ def plot_results(
     ax4 = plt.subplot2grid((2, 3), (1, 1))
 
     ax4.plot(err_y_sa, color="red", alpha=0.7, label="Systolic KF")
-    ax4.plot(err_y_np, color="blue", alpha=0.7, label="NumPy KF")
+    ax4.plot(err_y_np, color="blue", alpha=0.7, label="Classic Python KF")
 
     ax4.set_title("Y-axis Absolute Error")
     ax4.set_xlabel("Time step")
@@ -173,7 +173,7 @@ def plot_results(
 
     table = ax5.table(
         cellText=table_data,
-        colLabels=["Metric", "NumPy KF", "Systolic KF"],
+        colLabels=["Metric", "Classic Python KF", "Systolic KF"],
         loc="center"
     )
 
