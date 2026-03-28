@@ -3,6 +3,7 @@ composites.py
 =============
 Contains the high-level plotting wrappers that construct the final figures.
 """
+import os
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
@@ -119,13 +120,16 @@ def plot_results(
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
 
+    os.makedirs("output", exist_ok=True)
+    out_path = os.path.join("output", "drone_kalman_systolic.png")
+
     plt.savefig(
-        "drone_kalman_systolic.png",
+        out_path,
         dpi=300,
         bbox_inches="tight"
     )
 
-    print("\nSaved visualization → drone_kalman_systolic.png")
+    print(f"\nSaved visualization → {out_path}")
 
 
 def plot_comparison(x_true, y_true, x_meas, y_meas, results):
@@ -160,7 +164,8 @@ def plot_comparison(x_true, y_true, x_meas, y_meas, results):
         add_error_plot(ax_ey, y_true, res["est_y"], "Absolute Y-axis Error Over Time", "|Error| (m)", color=clr)
 
         safe_name = name.replace(" ", "_").replace("(", "").replace(")", "").replace("=", "")
-        out_path = f"drone_filter_{safe_name}.png"
+        os.makedirs("output", exist_ok=True)
+        out_path = os.path.join("output", f"drone_filter_{safe_name}.png")
         plt.savefig(out_path, dpi=150, bbox_inches="tight")
         print(f"Saved → {out_path}")
 
@@ -200,7 +205,8 @@ def plot_comparison(x_true, y_true, x_meas, y_meas, results):
 
     ax_tbl.set_title("Performance Summary", fontsize=14, fontweight="bold")
 
-    out_path_tbl = "drone_filter_performance_summary.png"
+    os.makedirs("output", exist_ok=True)
+    out_path_tbl = os.path.join("output", "drone_filter_performance_summary.png")
     plt.savefig(out_path_tbl, dpi=150, bbox_inches="tight")
     print(f"Saved → {out_path_tbl}")
 
