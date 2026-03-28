@@ -1,6 +1,6 @@
-# Drone Path Tracking — Kalman Filter + 4×4 Systolic Array
+# Drone Path Tracking — Unified Filter Benchmark
 
-A Python project that tracks drone trajectories using a **Kalman Filter** accelerated by a **hardware-inspired 4×4 Systolic Array**, benchmarked against a standard NumPy implementation.
+A Python project that tracks drone trajectories using a **Kalman Filter** accelerated by a **hardware-inspired 4×4 Systolic Array**, benchmarked against a standard NumPy implementation and a suite of **Alternative Filtering Techniques**.
 
 ---
 
@@ -9,10 +9,11 @@ A Python project that tracks drone trajectories using a **Kalman Filter** accele
 | Feature | Details |
 |--------|---------|
 | Dataset | EuRoC MAV — `MH_03_medium` |
-| Filter | 2D Kalman Filter (x, y, vx, vy) |
+| Primary Filter | 2D Kalman Filter (x, y, vx, vy) |
 | Accelerator | 4×4 Systolic Array (C + OpenMP, compiled to DLL) |
-| Baseline | Standard NumPy matrix operations |
-| Metric | RMSE (metres) |
+| Baselines | Standard NumPy matrix operations |
+| Alternative Filters | Moving Average, EMA, Least Squares, Complementary, Median |
+| Metric | RMSE (metres), Runtime Speedup |
 
 ---
 
@@ -20,10 +21,12 @@ A Python project that tracks drone trajectories using a **Kalman Filter** accele
 
 ```
 Project_3/
-├── main.py                    # Entry point
+├── main.py                    # Unified entry point & runner
 ├── kalman/
 │   ├── kalman_numpy.py        # NumPy Kalman Filter (reference)
 │   └── kalman_systolic.py     # Systolic accelerated Kalman Filter
+├── filters/
+│   └── alternative_filters.py # Moving Avg, EMA, Least Squares, etc.
 ├── systolic/
 │   ├── systolic_array.c       # C implementation of 4×4 systolic array
 │   ├── systolic_array.h       # Header file
@@ -33,7 +36,11 @@ Project_3/
 │   ├── matrix_utils.py        # Pad/unpad matrices
 │   ├── metrics.py             # RMSE calculation
 │   ├── diagram.py             # ASCII architecture diagram
-│   └── visualization.py      # Matplotlib plots
+│   ├── filter_runner.py       # Helper to execute tracking tasks
+│   └── plotting/              # Modular visualization tools
+│       ├── config.py
+│       ├── components.py
+│       └── composites.py
 └── dataset/
     └── MH_03_medium/          # Drone flight CSV data
 ```
@@ -56,16 +63,28 @@ pip install numpy pandas matplotlib
 
 ### Run
 
+The project provides a unified execution interface with several command-line arguments to customize your run:
+
 ```bash
+# Run all (Kalman validation, Pure vs. Systolic, and all Alternative filters)
 python main.py
+
+# Skip the initial systolic array math validation
+python main.py --skip-validation
+
+# Run only Kalman filters (skip alternative filters)
+python main.py --skip-alternatives
+
+# Skip all graphical visualizations (fastest)
+python main.py --skip-plots
 ```
 
 ---
 
 ## 📊 Output
 
-- Console summary: RMSE, runtime, speedup ratio
-- Saved plot: `drone_kalman_systolic.png`
+- **Console Summary**: Tabular comparison of RMSE, runtime, and calculated speedup between Pure NumPy and Systolic Kalman approaches alongside other active filters.
+- **Visual Plots**: Multiple isolated windows displaying the trajectory paths, performance of individual filters (e.g., Drone path tracking overview, Kalman filter comparisons, and Individual Alternative Filter profiles).
 
 ---
 
