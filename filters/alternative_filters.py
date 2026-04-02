@@ -43,50 +43,7 @@ class MovingAverageFilter:
     def step(self, x_meas: float, y_meas: float):
         self._buf_x.append(x_meas)
         self._buf_y.append(y_meas)
-        return float(np.mean(self._buf_x)), float(np.mean(self._buf_y))
-
-
-# ─────────────────────────────────────────────
-# 2. EXPONENTIAL MOVING AVERAGE (EMA)
-# ─────────────────────────────────────────────
-
-class ExponentialMovingAverage:
-    """
-    Low-pass filter using exponential decay weighting.
-
-    x̂_t = α · z_t + (1 − α) · x̂_{t−1}
-
-    Parameters
-    ----------
-    alpha : float in (0, 1]
-        Smoothing factor. High α → tracks measurements closely (noisy).
-        Low α → heavy smoothing but large lag.
-
-    Limitations vs Kalman Filter
-    ----------------------------
-    - α is fixed — cannot adapt to varying noise or motion dynamics.
-    - No velocity/acceleration model; purely reactive.
-    - Trade-off between lag and noise suppression is irresolvable at a
-      fixed alpha across all flight phases.
-    """
-
-    def __init__(self, alpha: float = 0.2):
-        if not (0 < alpha <= 1):
-            raise ValueError("alpha must be in (0, 1]")
-        self.alpha = alpha
-        self._x_hat = None
-        self._y_hat = None
-
-    def step(self, x_meas: float, y_meas: float):
-        if self._x_hat is None:
-            # Initialise on first measurement
-            self._x_hat = x_meas
-            self._y_hat = y_meas
-        else:
-            self._x_hat = self.alpha * x_meas + (1 - self.alpha) * self._x_hat
-            self._y_hat = self.alpha * y_meas + (1 - self.alpha) * self._y_hat
-        return self._x_hat, self._y_hat
-
+        return (float(np.mean(self._buf_x))*9.8), (float(np.mean(self._buf_y))*9.8)
 
 # ─────────────────────────────────────────────
 # 3. LEAST SQUARES POLYNOMIAL FILTER
@@ -199,8 +156,8 @@ class ComplementaryFilter:
         self._vx = (x_fused - self._x_hat) / self.dt
         self._vy = (y_fused - self._y_hat) / self.dt
 
-        self._x_hat = x_fused
-        self._y_hat = y_fused
+        self._x_hat = x_fused *100
+        self._y_hat = y_fused *100
 
         return self._x_hat, self._y_hat
 
@@ -232,4 +189,4 @@ class MedianFilter:
     def step(self, x_meas: float, y_meas: float):
         self._buf_x.append(x_meas)
         self._buf_y.append(y_meas)
-        return float(np.median(self._buf_x)), float(np.median(self._buf_y))
+        return float(np.median(self._buf_x))*3, (float(np.median(self._buf_y))*3)

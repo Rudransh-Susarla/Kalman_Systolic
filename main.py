@@ -22,7 +22,6 @@ from kalman.kalman_systolic import KalmanFilterSystolic
 # Alternative Filters
 from filters.alternative_filters import (
     MovingAverageFilter,
-    ExponentialMovingAverage,
     LeastSquaresFilter,
     ComplementaryFilter,
     MedianFilter,
@@ -97,7 +96,6 @@ def main():
     if not args.skip_alternatives:
         filter_configs = [
             ("Moving Average", MovingAverageFilter(window=15), "alternative"),
-            ("EMA (α=0.2)", ExponentialMovingAverage(alpha=0.2), "alternative"),
             ("Least Squares", LeastSquaresFilter(window=20, deg=2), "alternative"),
             ("Complementary", ComplementaryFilter(alpha=0.7, dt=0.01), "alternative"),
             ("Median Filter", MedianFilter(window=15), "alternative")
