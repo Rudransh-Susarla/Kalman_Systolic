@@ -3,9 +3,9 @@ Drone Tracking Performance Summary
 ============================================================
 Filter                    | RMSE (m)   | Runtime      | vs KF   
 ------------------------------------------------------------
-Kalman Filter             | 0.1528     | 3.0391 s     | 1.00x   
-Moving Average            | 0.1028     | 4.1136 s     | 1.35x   
-Least Squares             | 0.2308     | 5.1254 s     | 1.69x   
-Complementary             | 0.2783     | 4.4409 s     | 1.46x   
-Median Filter             | 0.1241     | 3.4494 s     | 1.14x   
+Kalman Filter             | 0.1528     | 2.5717 s     | 1.00x   
+Moving Average            | 0.1028     | 3.7091 s     | 1.44x   
+Least Squares             | 0.2308     | 5.0400 s     | 1.96x   
+Complementary             | 0.2783     | 4.5786 s     | 1.78x   
+Median Filter             | 0.1241     | 2.9687 s     | 1.15x   
 ------------------------------------------------------------

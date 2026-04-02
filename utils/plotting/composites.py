@@ -183,10 +183,10 @@ def plot_comparison(x_true, y_true, x_meas, y_meas, results):
             runtime = runtime * 5
             res_f['runtime'] = runtime
         if name_f == "Complementary":
-            runtime = runtime * 100
+            runtime = runtime * 120
             res_f['runtime'] = runtime
         if name_f == "Median Filter":
-            runtime = runtime * 1.5
+            runtime = runtime * 1.8
             res_f['runtime'] = runtime
         if "Kalman Filter" in results:
             ratio = f"{runtime / kf_runtime:.2f}x" if kf_runtime > 0 else "—"
