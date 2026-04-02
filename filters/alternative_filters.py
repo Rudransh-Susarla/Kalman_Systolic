@@ -9,10 +9,9 @@ All implementations use only NumPy — no specialised frameworks.
 
 Filters included:
     1. MovingAverageFilter    — sliding window mean
-    2. ExponentialMovingAverage — EMA / low-pass (alpha-blending)
-    3. LeastSquaresFilter     — rolling polynomial regression (degree 2)
-    4. ComplementaryFilter    — heuristic sensor-fusion blend
-    5. MedianFilter           — sliding window median
+    2. LeastSquaresFilter     — rolling polynomial regression (degree 2)
+    3. ComplementaryFilter    — heuristic sensor-fusion blend
+    4. MedianFilter           — sliding window median
 """
 
 import numpy as np
@@ -43,10 +42,10 @@ class MovingAverageFilter:
     def step(self, x_meas: float, y_meas: float):
         self._buf_x.append(x_meas)
         self._buf_y.append(y_meas)
-        return (float(np.mean(self._buf_x))*9.8), (float(np.mean(self._buf_y))*9.8)
+        return float(np.mean(self._buf_x)), float(np.mean(self._buf_y))
 
 # ─────────────────────────────────────────────
-# 3. LEAST SQUARES POLYNOMIAL FILTER
+# 2. LEAST SQUARES POLYNOMIAL FILTER
 # ─────────────────────────────────────────────
 
 class LeastSquaresFilter:
@@ -99,7 +98,7 @@ class LeastSquaresFilter:
 
 
 # ─────────────────────────────────────────────
-# 4. COMPLEMENTARY FILTER
+# 3. COMPLEMENTARY FILTER
 # ─────────────────────────────────────────────
 
 class ComplementaryFilter:
@@ -156,14 +155,14 @@ class ComplementaryFilter:
         self._vx = (x_fused - self._x_hat) / self.dt
         self._vy = (y_fused - self._y_hat) / self.dt
 
-        self._x_hat = x_fused *100
-        self._y_hat = y_fused *100
+        self._x_hat = x_fused
+        self._y_hat = y_fused
 
         return self._x_hat, self._y_hat
 
 
 # ─────────────────────────────────────────────
-# 5. MEDIAN FILTER
+# 4. MEDIAN FILTER
 # ─────────────────────────────────────────────
 
 class MedianFilter:
@@ -189,4 +188,4 @@ class MedianFilter:
     def step(self, x_meas: float, y_meas: float):
         self._buf_x.append(x_meas)
         self._buf_y.append(y_meas)
-        return float(np.median(self._buf_x))*3, (float(np.median(self._buf_y))*3)
+        return float(np.median(self._buf_x)), float(np.median(self._buf_y))

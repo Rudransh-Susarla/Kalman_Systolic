@@ -1,6 +1,5 @@
 from .alternative_filters import (
     MovingAverageFilter,
-    ExponentialMovingAverage,
     LeastSquaresFilter,
     ComplementaryFilter,
     MedianFilter,
@@ -8,7 +7,6 @@ from .alternative_filters import (
 
 __all__ = [
     "MovingAverageFilter",
-    "ExponentialMovingAverage",
     "LeastSquaresFilter",
     "ComplementaryFilter",
     "MedianFilter",
